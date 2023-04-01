@@ -273,6 +273,10 @@ while $running; do
 		fi
 	elif [[ "$prompt" == "history" ]]; then
 		echo -e "\n$(cat ~/.chatgpt_history)"
+	elif [[ "$prompt" == "prompts" ]]; then
+		for key in "${!prompts[@]}"; do
+    		echo "$key: ${prompts[$key]}"
+		done
 	elif [[ "$prompt" == "models" ]]; then
 		models_response=$(curl https://api.openai.com/v1/models \
 			-sS \
