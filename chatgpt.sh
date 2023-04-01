@@ -9,6 +9,15 @@ COMMAND_GENERATION_PROMPT="Return a one-line bash command with the functionality
 
 CHATGPT_CYAN_LABEL="\n\033[36mchatgpt \033[0m"
 
+# Read in prompts file
+declare -A prompts
+
+while read line; do
+    key=$(echo $line | cut -d' ' -f1)  # Extract the key (the first word)
+    value=$(echo $line | cut -d' ' -f2-)  # Extract the value (the rest of the line)
+    prompts[$key]=$value  # Assign the value to the key in the array
+done < prompts.txt
+
 # error handling function
 # $1 should be the response body
 handle_error() {
@@ -314,6 +323,10 @@ while $running; do
 		echo -e "$timestamp $prompt \n$response_data \n" >>~/.chatgpt_history
 
 	elif [[ "$MODEL" =~ ^gpt- ]]; then
+		# Insert custom prompt
+		for key in "${!prompts[@]}"; do
+        	prompt=${prompt//$key/${prompts[$key]}}
+    	done
 		# escape quotation marks
 		escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g')
 		# escape new lines
@@ -332,6 +345,10 @@ while $running; do
 		timestamp=$(date +"%d/%m/%Y %H:%M")
 		echo -e "$timestamp $prompt \n$response_data \n" >>~/.chatgpt_history
 	else
+		# Insert custom prompt
+		for key in "${!prompts[@]}"; do
+        	prompt=${prompt//$key/${prompts[$key]}}
+    	done
 		# escape quotation marks
 		escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g')
 		# escape new lines
