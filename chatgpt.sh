@@ -9,15 +9,6 @@ COMMAND_GENERATION_PROMPT="Return a one-line bash command with the functionality
 
 CHATGPT_CYAN_LABEL="\n\033[36mchatgpt \033[0m"
 
-# Read in prompts file
-declare -A prompts
-
-while read line; do
-    key=$(echo $line | cut -d' ' -f1)  # Extract the key (the first word)
-    value=$(echo $line | cut -d' ' -f2-)  # Extract the value (the rest of the line)
-    prompts[$key]=$value  # Assign the value to the key in the array
-done < prompts.txt
-
 # error handling function
 # $1 should be the response body
 handle_error() {
@@ -224,6 +215,12 @@ CONTEXT=${CONTEXT:-false}
 if [ ! -f ~/.chatgpt_history ]; then
 	touch ~/.chatgpt_history
 	chmod 600 ~/.chatgpt_history
+fi
+
+# create history file
+if [ ! -f ~/.chatgpt_prompts ]; then
+	touch ~/.chatgpt_prompts
+	chmod 600 ~/.chatgpt_prompts
 fi
 
 running=true
