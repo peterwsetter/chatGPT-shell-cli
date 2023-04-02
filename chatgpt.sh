@@ -291,13 +291,15 @@ while $running; do
 		if [[ ! -v prompts[$new_key] ]]; then
 			#prompts+=("$new_key$new_prompt")
 			prompts[$new_key]=$new_value # Assign
+			echo -e "$new_key $new_value" >>~/.chatgpt_prompts
 		else # The key is in the array
-			echo -e "Prompt key exists.\n"
-			echo -e "$prompts[$new_key]"
+			echo -e "Prompt key exists:"
+			echo -e "${prompts[$new_key]}"
 			read -p "Do you want to replace the old value? " -n 1 -r
             echo
             if [[ $REPLY =~ ^[Yy]$ ]]; then
-                prompts[$new_key]=$new_value
+                prompts[$new_key]=$new_value #Update array
+				sed -i "s/^$new_key.*/$new_key $new_value/" ~/.chatgpt_prompts
             fi
 		fi
 	elif [[ "$prompt" == "models" ]]; then
