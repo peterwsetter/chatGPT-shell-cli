@@ -116,6 +116,12 @@ This script relies on curl for the requests to the api and jq to parse the json 
   - `command:` To get a command with the specified functionality and run it, just type `command:` and explain what you want to achieve. The script will always ask you if you want to execute the command. i.e. `command: show me all files in this directory that have more than 150 lines of code` 
   *If a command modifies your file system or dowloads external files the script will show a warning before executing.*
 
+### Prompt Keywords
+
+  - peterwsetter fork implments the _prompt interface. Stored in the file ~/.chatgpt_prompts are keywords followed by common prompts. By convention, keywords begin with an underscore. 
+  - Print existing prompts with the `prompts` keyword
+  - Add a prompt with `promptadd` followed by the new keyword and its associated prompt.
+
 ### Chat context
 
   - For models other than `gpt-3.5-turbo` and `gpt-4` where the chat context is not supported by the OpenAI api, you can use the chat context build in this script. You can enable chat context mode for the model to remember your previous chat questions and answers. This way you can ask follow-up questions. In chat context the model gets a prompt to act as ChatGPT and is aware of today's date and that it's trained with data up until 2021. To enable this mode start the script with `-c` or `--chat-context`. i.e. `chatgpt --chat-context` and start to chat. 

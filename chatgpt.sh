@@ -223,6 +223,16 @@ if [ ! -f ~/.chatgpt_prompts ]; then
 	chmod 600 ~/.chatgpt_prompts
 fi
 
+# Read in prompts file
+declare -A prompts
+
+while read line; do
+    key=$(echo $line | cut -d' ' -f1)  # Extract the key (the first word)
+    value=$(echo $line | cut -d' ' -f2-)  # Extract the value (the rest of the line)
+    prompts[$key]=$value  # Assign the value to the key in the array
+done < ~/.chatgpt_prompts
+
+
 running=true
 # check input source and determine run mode
 
@@ -274,6 +284,22 @@ while $running; do
 		for key in "${!prompts[@]}"; do
     		echo "$key: ${prompts[$key]}"
 		done
+	elif [[ "$prompt" =~ ^promptadd ]]; then
+		new_key=$(echo "$prompt" | cut -d' ' -f2)  # Extract the key (the second word)
+	    new_value=$(echo "$prompt" | cut -d' ' -f3-)  # Extract the value (the rest of the line)
+		
+		if [[ ! -v prompts[$new_key] ]]; then
+			#prompts+=("$new_key$new_prompt")
+			prompts[$new_key]=$new_value # Assign
+		else # The key is in the array
+			echo -e "Prompt key exists.\n"
+			echo -e "$prompts[$new_key]"
+			read -p "Do you want to replace the old value? " -n 1 -r
+            echo
+            if [[ $REPLY =~ ^[Yy]$ ]]; then
+                prompts[$new_key]=$new_value
+            fi
+		fi
 	elif [[ "$prompt" == "models" ]]; then
 		models_response=$(curl https://api.openai.com/v1/models \
 			-sS \
